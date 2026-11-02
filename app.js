@@ -1,0 +1,7 @@
+(()=>{'use strict';const names=['mia','amy'],tabs=[...document.querySelectorAll('[role=tab]')],audios=[...document.querySelectorAll('audio')];
+function pauseAll(except){audios.forEach(a=>{if(a!==except)a.pause()});}
+function select(name,focus=false){if(!names.includes(name))name='mia';pauseAll();tabs.forEach(t=>{const on=t.dataset.student===name;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;document.getElementById(t.dataset.student).hidden=!on;if(on&&focus)t.focus()});const url=new URL(location.href);url.searchParams.set('student',name);history.replaceState(null,'',url);document.getElementById('status').textContent='';}
+tabs.forEach((t,i)=>{t.onclick=()=>select(t.dataset.student);t.onkeydown=e=>{let n;if(e.key==='ArrowRight')n=(i+1)%tabs.length;if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;if(e.key==='Home')n=0;if(e.key==='End')n=tabs.length-1;if(n!==undefined){e.preventDefault();select(tabs[n].dataset.student,true)}}});
+audios.forEach(a=>{a.addEventListener('play',()=>{pauseAll(a);document.getElementById('status').textContent=''});a.addEventListener('error',()=>{document.getElementById('status').textContent='音频暂时无法加载，请检查网络后重新打开。'})});
+document.querySelectorAll('[data-key]').forEach(c=>{try{c.checked=localStorage.getItem('consseau:'+c.dataset.key)==='1'}catch{}c.onchange=()=>{try{localStorage.setItem('consseau:'+c.dataset.key,c.checked?'1':'0')}catch{}}});select(new URL(location.href).searchParams.get('student'));
+})();

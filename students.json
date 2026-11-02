@@ -1,0 +1,83 @@
+{
+  "mia": [
+    {
+      "word": "Blamed",
+      "ipa": "/bleɪmd/",
+      "meaning": "责怪（过去式／过去分词）",
+      "tip": "先读 /bleɪm/，再轻轻接上 /d/；词尾 /md/ 连起来，不多加一个音节。",
+      "stem": "mia-0"
+    },
+    {
+      "word": "Fair",
+      "ipa": "/fer/",
+      "meaning": "公平的；公正的",
+      "tip": "美式 /r/ 要卷舌；元音接 /r/ 连贯读出，不读成两个音节。",
+      "stem": "mia-1"
+    },
+    {
+      "word": "Apologized",
+      "ipa": "/əˈpɑːlədʒaɪzd/",
+      "meaning": "道歉（过去式／过去分词）",
+      "tip": "重音在第二音节；注意 /dʒ/，词尾 /zd/ 连读，-ed 不单独成节。",
+      "stem": "mia-2"
+    },
+    {
+      "word": "Afraid",
+      "ipa": "/əˈfreɪd/",
+      "meaning": "害怕的",
+      "tip": "开头 /ə/ 轻而短，重读后半部分 /freɪd/；结尾保留 /d/ 的收尾。",
+      "stem": "mia-3"
+    },
+    {
+      "word": "Bravest words",
+      "ipa": "/ˈbreɪvɪst wɝːdz/",
+      "meaning": "最勇敢的话语",
+      "tip": "bravest 读两音节；/st/ 接 words，words 中 /ɝː/ 卷舌，末尾是 /dz/。",
+      "stem": "mia-4"
+    }
+  ],
+  "amy": [
+    {
+      "word": "Harrow School",
+      "ipa": "/ˈhæroʊ skuːl/",
+      "meaning": "哈罗公学",
+      "tip": "Harrow 重读前半部分；School 开头 /sk/ 连起来，不加额外元音。",
+      "stem": "amy-0"
+    },
+    {
+      "word": "excavator",
+      "ipa": "/ˈekskəveɪtɚ/",
+      "meaning": "挖掘机",
+      "tip": "重音在第一个音节；开头 /eksk/ 连贯读出，结尾轻读。",
+      "stem": "amy-1"
+    },
+    {
+      "word": "identify",
+      "ipa": "/aɪˈdentɪfaɪ/",
+      "meaning": "识别；认出",
+      "tip": "重读 /den/；最后是 /faɪ/，不要漏掉结尾。",
+      "stem": "amy-2"
+    },
+    {
+      "word": "months",
+      "ipa": "/mʌnθs/",
+      "meaning": "月（复数）",
+      "tip": "一个音节。舌尖轻触上下齿间发 /θ/，接 /s/，不要多加一拍。",
+      "stem": "amy-3"
+    },
+    {
+      "word": "discover",
+      "ipa": "/dɪˈskʌvɚ/",
+      "meaning": "发现",
+      "tip": "重读中间 /skʌ/；开头轻读，末尾保留美式 /r/。",
+      "stem": "amy-4"
+    },
+    {
+      "word": "fortunate",
+      "ipa": "/ˈfɔːrtʃənət/",
+      "meaning": "幸运的",
+      "tip": "重音在开头；中间有 /tʃ/ 音，末尾轻读 /ət/，不是 /eɪt/。",
+      "stem": "amy-5"
+    }
+  ]
+}
