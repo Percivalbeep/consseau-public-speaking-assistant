@@ -13,15 +13,16 @@ def api(path,data=None):
 head=api('git/ref/heads/main')['object']['sha']
 local=run('git','rev-parse','HEAD')
 if head==local:print('Already published');raise SystemExit
-names=run('git','ls-tree','-r','--name-only',local).splitlines()
-remote={x['path']:x['sha'] for x in api('git/trees/'+head+'?recursive=1')['tree'] if x['type']=='blob'}
+entries=subprocess.check_output(['git','ls-tree','-r','-z',local],cwd=root).decode().split('\0')
+tracked=[(e.split('\t',1)[1],e.split(' ',1)[0]) for e in entries if e]
+remote={x['path']:(x['sha'],x['mode']) for x in api('git/trees/'+head+'?recursive=1')['tree'] if x['type']=='blob'}
 tree=[]
-for name in names:
+for name,mode in tracked:
  content=subprocess.check_output(['git','show',local+':'+name],cwd=root)
  digest=hashlib.sha1(b'blob '+str(len(content)).encode()+b'\0'+content).hexdigest()
- if remote.get(name)==digest:continue
+ if remote.get(name)==(digest,mode):continue
  blob=api('git/blobs',{'content':base64.b64encode(content).decode(),'encoding':'base64'})
- tree.append({'path':name,'mode':'100644','type':'blob','sha':blob['sha']})
+ tree.append({'path':name,'mode':mode,'type':'blob','sha':blob['sha']})
 if not tree:print('No changes');raise SystemExit
 base=api('git/commits/'+head)['tree']['sha']
 t=api('git/trees',{'base_tree':base,'tree':tree})
