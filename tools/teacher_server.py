@@ -10,11 +10,16 @@ def speech(job,text,rate):
  try:
   JOBS[job]['status']='generating'
   text=text.replace('[[','').replace(']]','')
+  words=len(re.findall(r"[A-Za-z]+(?:['’-][A-Za-z]+)*",text))
+  paragraphs=len([p for p in re.split(r'\n\s*\n',text) if p.strip()])
   text=' [[slnc 450]] '.join(p.strip() for p in re.split(r'\n\s*\n',text) if p.strip())
   src=PRIVATE/f'{job}.txt';src.write_text(text)
   subprocess.run(['say','-v','Samantha','-r',str(rate),'-f',str(src),'-o',str(PRIVATE/f'{job}.aiff')],check=True,timeout=120)
   normal=PRIVATE/f'{job}.mp3';slow=PRIVATE/f'{job}-slow.mp3'
-  subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(PRIVATE/f'{job}.aiff'),'-codec:a','libmp3lame','-q:a','3',str(normal)],check=True,timeout=120)
+  raw=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(PRIVATE/f'{job}.aiff')]))
+  target=words/rate*60+max(0,paragraphs-1)*.45
+  tempo=max(.5,min(1.5,raw/target)) if words>=15 and target else 1
+  subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(PRIVATE/f'{job}.aiff'),'-filter:a',f'atempo={tempo}','-codec:a','libmp3lame','-q:a','3',str(normal)],check=True,timeout=120)
   subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(normal),'-filter:a','atempo=0.85','-codec:a','libmp3lame','-q:a','3',str(slow)],check=True,timeout=120)
   duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(normal)]))
   if duration<.3:raise ValueError('没有生成有效音频，请检查系统语音。')

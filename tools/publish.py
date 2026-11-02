@@ -1,5 +1,5 @@
 """Publish the committed main tree using gh's authenticated Git data API."""
-import subprocess,json,base64
+import subprocess,json,base64,hashlib
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 repo='Percivalbeep/consseau-public-speaking-assistant'
@@ -13,13 +13,14 @@ def api(path,data=None):
 head=api('git/ref/heads/main')['object']['sha']
 local=run('git','rev-parse','HEAD')
 if head==local:print('Already published');raise SystemExit
-try:names=run('git','diff','--name-only',head,local).splitlines()
-except subprocess.CalledProcessError:names=run('git','ls-files').splitlines()
+names=run('git','ls-tree','-r','--name-only',local).splitlines()
+remote={x['path']:x['sha'] for x in api('git/trees/'+head+'?recursive=1')['tree'] if x['type']=='blob'}
 tree=[]
 for name in names:
- p=root/name
- if not p.is_file():tree.append({'path':name,'mode':'100644','type':'blob','sha':None});continue
- blob=api('git/blobs',{'content':base64.b64encode(p.read_bytes()).decode(),'encoding':'base64'})
+ content=subprocess.check_output(['git','show',local+':'+name],cwd=root)
+ digest=hashlib.sha1(b'blob '+str(len(content)).encode()+b'\0'+content).hexdigest()
+ if remote.get(name)==digest:continue
+ blob=api('git/blobs',{'content':base64.b64encode(content).decode(),'encoding':'base64'})
  tree.append({'path':name,'mode':'100644','type':'blob','sha':blob['sha']})
 if not tree:print('No changes');raise SystemExit
 base=api('git/commits/'+head)['tree']['sha']
