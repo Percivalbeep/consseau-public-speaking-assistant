@@ -6,7 +6,7 @@ from datetime import date
 ROOT=Path(__file__).resolve().parents[1]
 PRIVATE=ROOT/'.work/studio';PRIVATE.mkdir(parents=True,exist_ok=True)
 TOKEN=secrets.token_urlsafe(32);JOBS={};LOCK=threading.Lock()
-def speech(job,text,rate):
+def speech(job,text,rate,voice):
  try:
   JOBS[job]['status']='generating'
   text=text.replace('[[','').replace(']]','')
@@ -16,7 +16,7 @@ def speech(job,text,rate):
   normal=PRIVATE/f'{job}.mp3';slow=PRIVATE/f'{job}-slow.mp3'
   for suffix,voice_rate,output in [('',rate,normal),('-slow',max(85,round(rate*.82)),slow)]:
    wav=PRIVATE/f'{job}{suffix}.wav'
-   subprocess.run([str(python),str(ROOT/'tools/kokoro_engine.py'),str(src),str(wav),'--rate',str(voice_rate),'--voice','af_heart'],check=True,timeout=900)
+   subprocess.run([str(python),str(ROOT/'tools/kokoro_engine.py'),str(src),str(wav),'--rate',str(voice_rate),'--voice',voice],check=True,timeout=900)
    subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(wav),'-codec:a','libmp3lame','-q:a','3',str(output)],check=True,timeout=120)
   duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(normal)]))
   if duration<.3:raise ValueError('没有生成有效音频，请检查语音模型。')
@@ -79,7 +79,9 @@ class Handler(SimpleHTTPRequestHandler):
     text=d.get('text','').strip();title=d.get('title','').strip()[:100] or 'Speech practice';rate=int(d.get('rate',135))
     if not 1<=len(text)<=15000:raise ValueError('请输入稿件，最多15000字符')
     if rate not in [110,135,155]:raise ValueError('语速设置无效')
-    job=uuid.uuid4().hex;JOBS[job]={'status':'queued','title':title,'publish':None};threading.Thread(target=speech,args=(job,text,rate),daemon=True).start();return self.reply({'job':job})
+    voice=d.get('voice','af_bella')
+    if voice not in ['af_bella','af_heart']:raise ValueError('音色设置无效')
+    job=uuid.uuid4().hex;JOBS[job]={'status':'queued','title':title,'publish':None};threading.Thread(target=speech,args=(job,text,rate,voice),daemon=True).start();return self.reply({'job':job})
    if self.path=='/api/publish':
     job=d['job'];student=d['student']
     if student not in ['mia','amy'] or job not in JOBS or JOBS[job]['status']!='ready':raise ValueError('请先生成并试听音频')
